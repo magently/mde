@@ -1,0 +1,3 @@
+storage/mysql/*
+!storage/mysql/.gitkeep
+.env

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ ! -e "$HOME/.my.cnf" ]; then
+    echo "[client]
+host = db
+user = ${MYSQL_USER}
+password = ${MYSQL_PASSWORD}
+database = ${MYSQL_DATABASE}" > $HOME/.my.cnf
+fi
+
+if [ "$COMPOSER_INSTALL_ON_BOOT" == "true" ]; then
+    composer install
+fi
+
+exec /usr/local/bin/docker-php-entrypoint "$@"

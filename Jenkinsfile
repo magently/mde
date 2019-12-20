@@ -6,8 +6,8 @@ pipeline {
     stages {
         stage('Build image') {
             steps {
-                sh '[ ! -e docker/magento ] || docker build docker/magento'
-                sh '[ ! -e docker/nginx ] || docker build docker/nginx'
+                sh 'docker build --build-arg php_version=7.1 docker/magento'
+                sh 'docker build docker/nginx'
             }
 
             post {
