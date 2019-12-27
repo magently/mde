@@ -32,3 +32,5 @@ services:
             - ${MAGENTO_PATH}:/app
         ports:
             - ${HTTP_EXTERNAL_PORT}:80
+        environment:
+            - VARNISH_ENABLED

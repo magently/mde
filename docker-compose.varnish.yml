@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+
+    varnish:
+        image: emgag/varnish:5.2.1
+        volumes:
+            - ./docker/varnish/default.vcl:/etc/varnish/default.vcl:ro
