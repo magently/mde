@@ -15,6 +15,7 @@ services:
             - ${MAGENTO_PATH}:/app
             - ${COMPOSER_AUTH_FILE}:/composer_home/auth.json:ro
             - ${HOME}/.composer/cache:/composer_home/cache
+            - ${HOME}/.npm:${HOME}/.npm
         env_file:
             - .env
 
