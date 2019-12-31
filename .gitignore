@@ -1,3 +1,5 @@
 storage/mysql/*
 !storage/mysql/.gitkeep
 .env
+
+docker-compose.custom.yml
