@@ -30,7 +30,7 @@ services:
     web:
         build: ./docker/nginx
         volumes:
-            - ${MAGENTO_PATH}:/app
+            - ${MAGENTO_PATH}:/app:ro
         ports:
             - ${HTTP_EXTERNAL_PORT}:80
         environment:
