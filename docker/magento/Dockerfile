@@ -1,51 +1,70 @@
 ARG php_version
-FROM "php:${php_version}-fpm-alpine"
+FROM "php:${php_version}-fpm"
 
 ARG php_version
 
 # Install all required components
-RUN apk add \
-    freetype-dev \
-    libjpeg-turbo-dev \
+RUN apt update && apt -y install \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
     libpng-dev \
     libxml2-dev \
     libxslt-dev \
     libzip-dev \
     libmcrypt-dev \
-    icu-dev \
-    composer \
+    libwebp-dev \
+    libicu-dev \
     wget \
     openssl \
     git \
     openssh-client \
-    mysql-client \
-    bash \
-    nodejs \
-    nodejs-dev \
-    npm \
-    alpine-sdk \
+    mariadb-client \
+    build-essential \
     autoconf \
     automake \
-    nasm
+    nasm \
+    bc
 
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+# Configure PHP GD extension to support JPEG, FreeType and WebP.
+# The configuration switches was changed prior to PHP 7.4 version.
+RUN if [ `echo "($php_version < 7.4)" | bc` -eq "1" ]; then docker-php-ext-configure gd --with-jpeg-dir --with-freetype-dir --with-webp-dir; else docker-php-ext-configure gd --with-jpeg --with-freetype --with-webp; fi
+
 RUN docker-php-ext-install -j$(nproc) \
-    iconv \
     gd \
     soap \
     bcmath \
-    ctype \
-    dom \
-    hash \
     intl \
-    mbstring \
     pdo_mysql \
     simplexml \
     xsl \
     zip
 
-# Using PHP prior to version 7.2 requires installing mcrypt extension
-RUN [ `echo "($php_version < 7.2)" | bc` == "1" ] && docker-php-ext-install -j$(nproc) mcrypt || true
+# PHP mcrypt extension installation is only possible with `pecl` since 7.2
+RUN if [ `echo "($php_version < 7.2)" | bc` -eq 1 ]; then \
+        docker-php-ext-install -j$(nproc) mcrypt; \
+    fi
+
+RUN if [ `echo "($php_version >= 7.2)" | bc` -eq 1 ]; then \
+        pecl channel-update pecl.php.net; \
+        pecl install mcrypt; \
+        echo "extension=mcrypt.so" > /usr/local/etc/php/conf.d/mcrypt.ini; \
+    fi
+
+# Install Composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php && \
+    php -r "unlink('composer-setup.php');" && \
+    chmod +x composer.phar && \
+    mv composer.phar /usr/local/bin/composer
+
+# Install NodeJS
+ENV NODE_RELEASE v12.14.1
+RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE}-linux-x64.tar.gz -O nodejs.tar.gz && \
+    tar -xf nodejs.tar.gz && \
+    rm nodejs.tar.gz && \
+    mv node-${NODE_RELEASE}* /opt/node && \
+    ln -s /opt/node/bin/node /usr/local/bin/node && \
+    ln -s /opt/node/bin/npm /usr/local/bin/npm
 
 # Configure entrypoint related stuff
 ENV COMPOSER_HOME /composer_home
@@ -58,7 +77,7 @@ RUN mkdir $HOME && chmod 777 $HOME
 
 ENV ENTRYPOINT_FILE /usr/local/bin/magento-entrypoint
 ADD entrypoint ${ENTRYPOINT_FILE}
-RUN chmod +x $ENTRYPOINT_FILE
+RUN chmod +x ${ENTRYPOINT_FILE}
 
 ENTRYPOINT ["sh", "/usr/local/bin/magento-entrypoint"]
 CMD ["php-fpm"]
