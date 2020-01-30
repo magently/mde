@@ -1,15 +1,9 @@
 #!/bin/sh
 
-target_conf=/etc/nginx/conf.d/proxy.conf
-
-if [ -e $target_conf ]; then
-    rm $target_conf
-fi
-
 if [ "$VARNISH_ENABLED" == "true" ]; then
-    ln -s /etc/nginx/proxy_varnish.conf $target_conf
+    export PROXY_TARGET=http://varnish
 else
-    ln -s /etc/nginx/proxy_magento.conf $target_conf
+    export PROXY_TARGET=${PROXY_TARGET:-http://localhost:18080}
 fi
 
 exec "$@"

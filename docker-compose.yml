@@ -35,3 +35,5 @@ services:
             - ${HTTP_EXTERNAL_PORT}:80
         environment:
             - VARNISH_ENABLED
+            - HTTP_EXTERNAL_PORT
+            - PROXY_TARGET
