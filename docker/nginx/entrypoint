@@ -1,9 +1,18 @@
 #!/bin/sh
 
+# Set default reverse proxy target
 if [ "$VARNISH_ENABLED" == "true" ]; then
     export PROXY_TARGET=http://varnish
 else
-    export PROXY_TARGET=${PROXY_TARGET:-http://localhost:18080}
+    export PROXY_TARGET=${PROXY_TARGET:-http://web:18080}
 fi
+
+# Set configuration for Magento
+magento_conf_file=/etc/nginx/conf.d/magento.conf
+[ -e $magento_conf_file ] && rm $magento_conf_file || true
+[ "$MAGENTO_1_MODE" == "true" ] &&
+    magento_src_conf=/etc/nginx/magento1.conf ||
+    magento_src_conf=/etc/nginx/magento2.conf
+ln -s $magento_src_conf $magento_conf_file
 
 exec "$@"

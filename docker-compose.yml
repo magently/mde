@@ -37,3 +37,4 @@ services:
             - VARNISH_ENABLED
             - HTTP_EXTERNAL_PORT
             - PROXY_TARGET
+            - MAGENTO_1_MODE
