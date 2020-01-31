@@ -7,17 +7,21 @@ services:
             context: ./docker/magento
             args:
                 php_version: ${PHP_VERSION}
-        user: ${UID}:${GID}
+        user: ${UID:-1000}:${GID:-1000}
         volumes:
             - /etc/passwd:/etc/passwd:ro
             - /etc/group:/etc/group:ro
-            - ${HOME}/.ssh/:${HOME}/.ssh
+            - ${HOME}/.ssh/:${HOME}/.ssh:ro
             - ${MAGENTO_PATH}:/app
-            - ${COMPOSER_AUTH_FILE}:/composer_home/auth.json:ro
+            - ${COMPOSER_AUTH_FILE:-/dev/null}:/composer_home/auth.json:ro
             - ${HOME}/.composer/cache:/composer_home/cache
             - ${HOME}/.npm:${HOME}/.npm
-        env_file:
-            - .env
+        environment:
+            - COMPOSER_INSTALL_ON_BOOT
+            - COMPOSER_AUTH
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     db:
         image: mariadb
@@ -26,6 +30,11 @@ services:
             - ./storage/mysql:/var/lib/mysql
         env_file:
             - .env
+        environment:
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     web:
         build: ./docker/nginx

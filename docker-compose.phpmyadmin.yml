@@ -5,7 +5,7 @@ services:
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:
-            - ${PHPMYADMIN_EXTERNAL_PORT}:80
+            - ${PHPMYADMIN_EXTERNAL_PORT:-8336}:80
         environment:
             PMA_HOST: db
             PMA_USER: root
