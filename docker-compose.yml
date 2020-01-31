@@ -24,10 +24,10 @@ services:
             - MYSQL_DATABASE
 
     db:
-        image: mariadb
-        user: ${UID}:${GID}
+        build: ./docker/mariadb
         volumes:
-            - ./storage/mysql:/var/lib/mysql
+            - ${MYSQL_USER_DIRECTORY:-/dev/null}:/var/lib/mysql-user
+            - mysql-volume:/var/lib/mysql-volume
         env_file:
             - .env
         environment:
@@ -35,6 +35,8 @@ services:
             - MYSQL_USER
             - MYSQL_PASSWORD
             - MYSQL_DATABASE
+            - USER_UID=${UID:-1000}
+            - USER_GID=${GID:-1000}
 
     web:
         build: ./docker/nginx
@@ -47,3 +49,6 @@ services:
             - HTTP_EXTERNAL_PORT
             - PROXY_TARGET
             - MAGENTO_1_MODE
+
+volumes:
+    mysql-volume:

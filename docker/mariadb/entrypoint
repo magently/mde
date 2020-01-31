@@ -1,0 +1,16 @@
+#!/bin/sh
+
+mysql_user_dir=/var/lib/mysql-user
+mysql_volume_dir=/var/lib/mysql-volume
+mysql_data_target=/var/lib/mysql-custom
+
+# Check if user provided path is a directory and is writtable by the user
+# Otherwise proceed normally
+[ -e $mysql_data_target ] && rm $mysql_data_target
+if [ -d $mysql_user_dir ] && gosu $USER_UID:$USER_GID sh -c "[ -w $mysql_user_dir ]"; then
+    ln -s $mysql_user_dir $mysql_data_target
+    gosu $USER_UID:$USER_GID /usr/local/bin/docker-entrypoint.sh "$@"
+else
+    ln -s $mysql_volume_dir $mysql_data_target
+    exec /usr/local/bin/docker-entrypoint.sh "$@"
+fi
