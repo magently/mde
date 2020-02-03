@@ -3,19 +3,17 @@ version: '3'
 services:
 
     app:
+        user: ${UID}:${GID}
         build:
             context: ./docker/magento
             args:
                 php_version: ${PHP_VERSION}
-        user: ${UID:-1000}:${GID:-1000}
         volumes:
-            - /etc/passwd:/etc/passwd:ro
-            - /etc/group:/etc/group:ro
-            - ${HOME}/.ssh/:${HOME}/.ssh:ro
+            - ${HOME}/.ssh:/app-home/.ssh:ro
+            - ${HOME}/.npm:/app-home/.npm
+            - ${COMPOSER_AUTH_FILE:-/dev/null}:/app-home/.composer/auth.json:ro
+            - ${HOME}/.composer/cache:/app-home/.composer/cache
             - ${MAGENTO_PATH}:/app
-            - ${COMPOSER_AUTH_FILE:-/dev/null}:/composer_home/auth.json:ro
-            - ${HOME}/.composer/cache:/composer_home/cache
-            - ${HOME}/.npm:${HOME}/.npm
         environment:
             - COMPOSER_INSTALL_ON_BOOT
             - COMPOSER_AUTH
@@ -31,12 +29,12 @@ services:
         env_file:
             - .env
         environment:
+            - USER_UID=${UID:-1000}
+            - USER_GID=${GID:-1000}
             - MYSQL_ROOT_PASSWORD
             - MYSQL_USER
             - MYSQL_PASSWORD
             - MYSQL_DATABASE
-            - USER_UID=${UID:-1000}
-            - USER_GID=${GID:-1000}
 
     web:
         build: ./docker/nginx

@@ -66,14 +66,11 @@ RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE
     ln -s /opt/node/bin/node /usr/local/bin/node && \
     ln -s /opt/node/bin/npm /usr/local/bin/npm
 
-# Configure entrypoint related stuff
-ENV COMPOSER_HOME /composer_home
-RUN mkdir /composer_home
-RUN chmod 777 /composer_home
+# General image configuration
 WORKDIR /app
 
-ENV HOME /home/user
-RUN mkdir $HOME && chmod 777 $HOME
+ENV HOME /app-home
+RUN mkdir -p $HOME && chmod 777 $HOME
 
 ENV ENTRYPOINT_FILE /usr/local/bin/magento-entrypoint
 ADD entrypoint ${ENTRYPOINT_FILE}
