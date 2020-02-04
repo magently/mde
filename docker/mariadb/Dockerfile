@@ -7,6 +7,7 @@ RUN set -eux; \
 	gosu nobody true
 
 ADD my.cnf /etc/mysql/my.cnf
+RUN chmod 0600 /etc/mysql/my.cnf
 
 ADD entrypoint /usr/local/bin/entrypoint
 RUN chmod +x /usr/local/bin/entrypoint

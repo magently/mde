@@ -8,9 +8,11 @@ mysql_data_target=/var/lib/mysql-custom
 # Otherwise proceed normally
 [ -e $mysql_data_target ] && rm $mysql_data_target
 if [ -d $mysql_user_dir ] && gosu $USER_UID:$USER_GID sh -c "[ -w $mysql_user_dir ]"; then
+    echo "Running MariaDB using user directory and permissions"
     ln -s $mysql_user_dir $mysql_data_target
     gosu $USER_UID:$USER_GID /usr/local/bin/docker-entrypoint.sh "$@"
 else
+    echo "Running MariaDB using internal volume"
     ln -s $mysql_volume_dir $mysql_data_target
     exec /usr/local/bin/docker-entrypoint.sh "$@"
 fi
