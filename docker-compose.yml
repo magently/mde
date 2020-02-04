@@ -20,6 +20,7 @@ services:
             - MYSQL_USER
             - MYSQL_PASSWORD
             - MYSQL_DATABASE
+            - PHP_IDE_CONFIG=serverName=docker_dev_${COMPOSE_PROJECT_NAME}
 
     db:
         build: ./docker/mariadb

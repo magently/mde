@@ -50,6 +50,17 @@ RUN if [ `echo "($php_version >= 7.2)" | bc` -eq 1 ]; then \
         echo "extension=mcrypt.so" > /usr/local/etc/php/conf.d/mcrypt.ini; \
     fi
 
+# Install Xdebug
+RUN if [ `echo "($php_version == 5.6)" | bc` -eq 1 ]; then \
+        pecl install xdebug-2.5.5; \
+    elif [ `echo "($php_version == 7.0)" | bc` -eq 1 ]; then \
+        pecl install xdebug-2.8.1; \
+    elif [ `echo "($php_version >= 7.1)" | bc` -eq 1 ]; then \
+        pecl install xdebug-2.9.2; \
+    fi
+
+ADD xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php && \
