@@ -3,16 +3,16 @@ version: '3'
 services:
 
     app:
-        user: ${UID}:${GID}
+        user: ${UID:-1000}:${GID:-1000}
         build:
             context: ./docker/magento
             args:
                 php_version: ${PHP_VERSION}
         volumes:
-            - ${HOME}/.ssh:/app-home/.ssh:ro
-            - ${HOME}/.npm:/app-home/.npm
+            - ${SSH_DIRECTORY:-~/.ssh}:/app-home/.ssh:ro
+            - ${NPM_DIRECTORY:-~/.npm}:/app-home/.npm
             - ${COMPOSER_AUTH_FILE:-/dev/null}:/app-home/.composer/auth.json:ro
-            - ${HOME}/.composer/cache:/app-home/.composer/cache
+            - ${COMPOSER_CACHE_DIRECTORY:-~/.composer/cache}:/app-home/.composer/cache
             - ${MAGENTO_PATH}:/app
         environment:
             - COMPOSER_INSTALL_ON_BOOT
