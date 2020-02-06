@@ -12,4 +12,4 @@ RUN chmod 0600 /etc/mysql/my.cnf
 ADD entrypoint /usr/local/bin/entrypoint
 RUN chmod +x /usr/local/bin/entrypoint
 ENTRYPOINT ["entrypoint"]
-CMD ["mysqld", "--innodb_data_home_dir=/var/lib/mysql-custom"]
+CMD ["mysqld", "--datadir=/var/lib/mysql-custom"]
