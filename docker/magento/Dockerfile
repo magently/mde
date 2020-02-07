@@ -23,7 +23,10 @@ RUN apt update && apt -y install \
     autoconf \
     automake \
     nasm \
-    bc
+    bc \
+    unzip \
+    dnsutils \
+    iproute
 
 # Configure PHP GD extension to support JPEG, FreeType and WebP.
 # The configuration switches was changed prior to PHP 7.4 version.
@@ -50,7 +53,8 @@ RUN if [ `echo "($php_version >= 7.2)" | bc` -eq 1 ]; then \
         echo "extension=mcrypt.so" > /usr/local/etc/php/conf.d/mcrypt.ini; \
     fi
 
-# Install Xdebug
+# Install and configure XDebug
+# Configuration is dynamically generated in entrypoint
 RUN if [ `echo "($php_version == 5.6)" | bc` -eq 1 ]; then \
         pecl install xdebug-2.5.5; \
     elif [ `echo "($php_version == 7.0)" | bc` -eq 1 ]; then \
@@ -58,8 +62,7 @@ RUN if [ `echo "($php_version == 5.6)" | bc` -eq 1 ]; then \
     elif [ `echo "($php_version >= 7.1)" | bc` -eq 1 ]; then \
         pecl install xdebug-2.9.2; \
     fi
-
-ADD xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+RUN ln -s /app-home/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \

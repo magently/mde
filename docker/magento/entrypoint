@@ -12,4 +12,23 @@ if [ "$COMPOSER_INSTALL_ON_BOOT" = "true" ]; then
     composer install
 fi
 
+# Configure XDebug
+# If host.docker.internal is resolvable, use it as remote host
+# Otherwise, use default gateway
+echo "zend_extension=xdebug.so
+xdebug.remote_enable=1
+xdebug.remote_autostart=1
+xdebug.remote_connect_back=0
+xdebug.remote_port=9000
+xdebug.remote_mode=req" > /app-home/xdebug.ini
+
+if nslookup host.docker.internal > /dev/null; then
+    remote_host='host.docker.internal'
+else
+    remote_host=$(ip route show | grep default | head -1 | awk '{print $3}')
+fi
+
+echo "xdebug.remote_host=${remote_host}" >> /app-home/xdebug.ini
+
+##
 exec /usr/local/bin/docker-php-entrypoint "$@"
