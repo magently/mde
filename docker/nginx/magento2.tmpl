@@ -1,11 +1,9 @@
-perl_set $http_external_port 'sub { return $ENV{"HTTP_EXTERNAL_PORT"}; }';
-
 upstream fastcgi_backend {
     server  app:9000;
 }
 
 server {
-    listen 18080 default_server;
+    listen {{ .Env.MAGENTO_PORT }} default_server;
     set $MAGE_ROOT /app;
 
     root $MAGE_ROOT/pub;
@@ -37,7 +35,7 @@ server {
 
             # Dirty hack for Magento - in some circumstances it takes SERVER_PORT to
             # generate URL and redirects to it.
-            fastcgi_param  SERVER_PORT          $http_external_port;
+            fastcgi_param  SERVER_PORT          {{ .Env.HTTP_EXTERNAL_PORT }};
         }
 
         location ~ ^/setup/(?!pub/). {
@@ -173,7 +171,7 @@ server {
 
         # Dirty hack for Magento - in some circumstances it takes SERVER_PORT to
         # generate URL and redirects to it.
-        fastcgi_param  SERVER_PORT          $http_external_port;
+        fastcgi_param  SERVER_PORT          {{ .Env.HTTP_EXTERNAL_PORT }};
     }
 
     gzip on;

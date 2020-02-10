@@ -48,7 +48,7 @@ services:
         environment:
             - VARNISH_ENABLED
             - HTTP_EXTERNAL_PORT
-            - PROXY_TARGET
+            - PROXY_THROUGH
             - MAGENTO_1_MODE
 
 volumes:
