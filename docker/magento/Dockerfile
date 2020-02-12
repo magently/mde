@@ -3,6 +3,10 @@ FROM "php:${php_version}-fpm"
 
 ARG php_version
 
+# Configure application home directory
+ENV HOME /app-home
+RUN mkdir -p $HOME && chmod 777 $HOME
+
 # Install all required components
 RUN apt update && apt -y install \
     libfreetype6-dev \
@@ -62,7 +66,6 @@ RUN if [ `echo "($php_version == 5.6)" | bc` -eq 1 ]; then \
     elif [ `echo "($php_version >= 7.1)" | bc` -eq 1 ]; then \
         pecl install xdebug-2.9.2; \
     fi
-RUN ln -s /app-home/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
@@ -70,6 +73,10 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
     php -r "unlink('composer-setup.php');" && \
     chmod +x composer.phar && \
     mv composer.phar /usr/local/bin/composer
+
+# Configure PHP and disable memory limit for PHP-FPM
+RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+RUN echo 'memory_limit=-1' > /usr/local/etc/php/php-cli.ini
 
 # Install NodeJS
 ENV NODE_RELEASE v12.14.1
@@ -82,13 +89,9 @@ RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE
 
 # General image configuration
 WORKDIR /app
-
-ENV HOME /app-home
-RUN mkdir -p $HOME && chmod 777 $HOME
-
 ENV ENTRYPOINT_FILE /usr/local/bin/magento-entrypoint
 ADD entrypoint ${ENTRYPOINT_FILE}
 RUN chmod +x ${ENTRYPOINT_FILE}
 
 ENTRYPOINT ["sh", "/usr/local/bin/magento-entrypoint"]
-CMD ["php-fpm"]
+CMD ["php-fpm", "-c", "/app-home/.php/fpm"]

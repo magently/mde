@@ -1,18 +1,15 @@
 #!/bin/sh
 
-# Set default reverse proxy target
-if [ "$VARNISH_ENABLED" == "true" ]; then
-    export PROXY_TARGET=http://varnish
+if [ "$PROXY_THROUGH" != "" ]; then
+    export MAGENTO_PORT=58080
+    dockerize -template /etc/nginx/templates/proxy.tmpl > /etc/nginx/conf.d/proxy.conf
 else
-    export PROXY_TARGET=${PROXY_TARGET:-http://web:18080}
+    export MAGENTO_PORT=80
+    [ $HTTP_EXTERNAL_PORT == 80 ] && export HTTP_EXTERNAL_PORT_DEFAULT=1
+    [ -e /etc/nginx/conf.d/proxy.conf ] && rm /etc/nginx/conf.d/proxy.conf
 fi
 
-# Set configuration for Magento
-magento_conf_file=/etc/nginx/conf.d/magento.conf
-[ -e $magento_conf_file ] && rm $magento_conf_file || true
-[ "$MAGENTO_1_MODE" == "true" ] &&
-    magento_src_conf=/etc/nginx/magento1.conf ||
-    magento_src_conf=/etc/nginx/magento2.conf
-ln -s $magento_src_conf $magento_conf_file
+[ "$MAGENTO_1_MODE" == "true" ] && magento_file='magento1.tmpl' || magento_file='magento2.tmpl'
+dockerize -template /etc/nginx/templates/$magento_file > /etc/nginx/conf.d/magento.conf
 
 exec "$@"

@@ -21,6 +21,8 @@ services:
             - MYSQL_PASSWORD
             - MYSQL_DATABASE
             - PHP_IDE_CONFIG=serverName=docker_dev_${COMPOSE_PROJECT_NAME}
+            - XDEBUG_REMOTE_HOST
+            - XDEBUG_REMOTE_PORT
 
     db:
         build: ./docker/mariadb
@@ -46,7 +48,7 @@ services:
         environment:
             - VARNISH_ENABLED
             - HTTP_EXTERNAL_PORT
-            - PROXY_TARGET
+            - PROXY_THROUGH
             - MAGENTO_1_MODE
 
 volumes:

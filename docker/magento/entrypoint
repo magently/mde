@@ -1,5 +1,26 @@
 #!/bin/sh
+fpm_conf_file=/app-home/.php/fpm/php.ini
 
+# Create directory for fpm_conf_file if not present
+mkdir -p $(dirname $fpm_conf_file)
+
+# Configure XDebug for PHP-FPM
+# If host.docker.internal is resolvable, use it as remote host
+# Otherwise, use default gateway
+echo "zend_extension=xdebug.so
+xdebug.remote_enable=1
+xdebug.remote_autostart=1
+xdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}
+xdebug.remote_mode=req" > $fpm_conf_file
+if [ "$XDEBUG_REMOTE_HOST" != "" ]; then
+    echo "xdebug.remote_host=${XDEBUG_REMOTE_HOST}" >> $fpm_conf_file
+elif nslookup host.docker.internal > /dev/null; then
+    echo "xdebug.remote_host=host.docker.internal" >> $fpm_conf_file
+else
+    echo "xdebug.remote_connect_back=1" >> $fpm_conf_file
+fi
+
+# Configure easy access for MySQL
 if [ ! -e "${HOME}/.my.cnf" ]; then
     echo "[client]
 host = db
@@ -8,27 +29,10 @@ password = ${MYSQL_PASSWORD}
 database = ${MYSQL_DATABASE}" > ${HOME}/.my.cnf
 fi
 
+# Execute composer install if required
 if [ "$COMPOSER_INSTALL_ON_BOOT" = "true" ]; then
     composer install
 fi
-
-# Configure XDebug
-# If host.docker.internal is resolvable, use it as remote host
-# Otherwise, use default gateway
-echo "zend_extension=xdebug.so
-xdebug.remote_enable=1
-xdebug.remote_autostart=1
-xdebug.remote_connect_back=0
-xdebug.remote_port=9000
-xdebug.remote_mode=req" > /app-home/xdebug.ini
-
-if nslookup host.docker.internal > /dev/null; then
-    remote_host='host.docker.internal'
-else
-    remote_host=$(ip route show | grep default | head -1 | awk '{print $3}')
-fi
-
-echo "xdebug.remote_host=${remote_host}" >> /app-home/xdebug.ini
 
 ##
 exec /usr/local/bin/docker-php-entrypoint "$@"

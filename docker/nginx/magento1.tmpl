@@ -1,11 +1,9 @@
-perl_set $http_external_port 'sub { return $ENV{"HTTP_EXTERNAL_PORT"}; }';
-
 upstream fastcgi_backend {
     server  app:9000;
 }
 
 server {
-    listen 18080 default_server;
+    listen {{ .Env.MAGENTO_PORT }}  default_server;
     root /app;
 
     location / {
@@ -45,6 +43,6 @@ server {
         expires         off;
         fastcgi_pass    fastcgi_backend;
         include         fastcgi.conf;
-        fastcgi_param   SERVER_PORT $http_external_port;
+        fastcgi_param   SERVER_PORT {{ .Env.HTTP_EXTERNAL_PORT }};
     }
 }
