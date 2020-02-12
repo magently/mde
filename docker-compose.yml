@@ -5,7 +5,7 @@ services:
     app:
         user: ${UID:-1000}:${GID:-1000}
         build:
-            context: ./docker/magento
+            context: ./docker/php
             args:
                 php_version: ${PHP_VERSION}
         volumes:
