@@ -91,7 +91,7 @@ RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE
 WORKDIR /app
 ENV ENTRYPOINT_FILE /usr/local/bin/magento-entrypoint
 ADD entrypoint ${ENTRYPOINT_FILE}
-RUN chmod +x ${ENTRYPOINT_FILE}
+RUN chmod 0755 ${ENTRYPOINT_FILE}
 
 ENTRYPOINT ["sh", "/usr/local/bin/magento-entrypoint"]
 CMD ["php-fpm", "-c", "/app-home/.php/fpm"]
