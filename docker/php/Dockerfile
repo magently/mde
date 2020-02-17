@@ -29,8 +29,7 @@ RUN apt update && apt -y install \
     nasm \
     bc \
     unzip \
-    dnsutils \
-    iproute2
+    dnsutils
 
 # Configure PHP GD extension to support JPEG, FreeType and WebP.
 # The configuration switches was changed prior to PHP 7.4 version.
