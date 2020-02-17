@@ -10,6 +10,8 @@ services:
             args:
                 php_version: ${PHP_VERSION}
         volumes:
+            - /etc/passwd:/etc/passwd:ro
+            - /etc/group:/etc/group:ro
             - ${SSH_DIRECTORY:-~/.ssh}:/app-home/.ssh:ro
             - ${NPM_DIRECTORY:-~/.npm}:/app-home/.npm
             - ${COMPOSER_AUTH_FILE:-/dev/null}:/app-home/.composer/auth.json:ro
