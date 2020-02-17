@@ -26,6 +26,13 @@ services:
             - PHP_IDE_CONFIG=serverName=docker_dev_${COMPOSE_PROJECT_NAME}
             - XDEBUG_REMOTE_HOST
             - XDEBUG_REMOTE_PORT
+            - SENDMAIL_SMTP_HOST
+            - SENDMAIL_SMTP_PORT
+            - SENDMAIL_SMTP_AUTH
+            - SENDMAIL_SMTP_TLS
+            - SENDMAIL_SMTP_USER
+            - SENDMAIL_SMTP_PASSWORD
+            - SENDMAIL_SMTP_FROM
 
     db:
         image: magently/mde-mariadb

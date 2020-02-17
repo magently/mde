@@ -86,6 +86,11 @@ RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE
     ln -s /opt/node/bin/node /usr/local/bin/node && \
     ln -s /opt/node/bin/npm /usr/local/bin/npm
 
+# Install MSMTP to enable PHP mail() function
+RUN apt update && apt -y install msmtp msmtp-mta ca-certificates
+RUN echo "[mail function]" >> /usr/local/etc/php/conf.d/mail.ini
+RUN echo "sendmail_path = /usr/bin/msmtp -C /app-home/.msmtprc -t" >> /usr/local/etc/php/conf.d/mail.ini
+
 # General image configuration
 WORKDIR /app
 ENV ENTRYPOINT_FILE /usr/local/bin/magento-entrypoint

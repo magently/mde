@@ -6,7 +6,7 @@ mkdir -p $(dirname $fpm_conf_file)
 
 # Configure XDebug for PHP-FPM
 # If host.docker.internal is resolvable, use it as remote host
-# Otherwise, use default gateway
+# Otherwise, use user defined remote host or connect back mechanism
 echo "zend_extension=xdebug.so
 xdebug.remote_enable=1
 xdebug.remote_autostart=1
@@ -27,6 +27,25 @@ host = db
 user = ${MYSQL_USER}
 password = ${MYSQL_PASSWORD}
 database = ${MYSQL_DATABASE}" > ${HOME}/.my.cnf
+fi
+
+# Configure MSMTP
+if [ -n "$SENDMAIL_SMTP_HOST" ]; then
+    msmtprc_file=/app-home/.msmtprc
+    echo "defaults
+port ${SENDMAIL_SMTP_PORT:-25}
+tls ${SENDMAIL_SMTP_TLS:-off}
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+account mail
+host $SENDMAIL_SMTP_HOST
+from ${SENDMAIL_SMTP_FROM:-magento@internal.app}
+auth ${SENDMAIL_SMTP_AUTH:-off}
+user ${SENDMAIL_SMTP_USER:-user}
+password ${SENDMAIL_SMTP_PASSWORD:-password}
+
+account default : mail" > $msmtprc_file
+    chmod 0600 $msmtprc_file
 fi
 
 # Execute composer install if required
