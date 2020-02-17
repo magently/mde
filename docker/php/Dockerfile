@@ -29,8 +29,7 @@ RUN apt update && apt -y install \
     nasm \
     bc \
     unzip \
-    dnsutils \
-    iproute2
+    dnsutils
 
 # Configure PHP GD extension to support JPEG, FreeType and WebP.
 # The configuration switches was changed prior to PHP 7.4 version.
@@ -91,7 +90,7 @@ RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE
 WORKDIR /app
 ENV ENTRYPOINT_FILE /usr/local/bin/magento-entrypoint
 ADD entrypoint ${ENTRYPOINT_FILE}
-RUN chmod +x ${ENTRYPOINT_FILE}
+RUN chmod 0755 ${ENTRYPOINT_FILE}
 
 ENTRYPOINT ["sh", "/usr/local/bin/magento-entrypoint"]
 CMD ["php-fpm", "-c", "/app-home/.php/fpm"]

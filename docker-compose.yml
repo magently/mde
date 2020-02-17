@@ -4,11 +4,14 @@ services:
 
     app:
         user: ${UID:-1000}:${GID:-1000}
+        image: magently/mde-php-${PHP_VERSION}
         build:
-            context: ./docker/magento
+            context: ./docker/php
             args:
                 php_version: ${PHP_VERSION}
         volumes:
+            - /etc/passwd:/etc/passwd:ro
+            - /etc/group:/etc/group:ro
             - ${SSH_DIRECTORY:-~/.ssh}:/app-home/.ssh:ro
             - ${NPM_DIRECTORY:-~/.npm}:/app-home/.npm
             - ${COMPOSER_AUTH_FILE:-/dev/null}:/app-home/.composer/auth.json:ro
@@ -25,6 +28,7 @@ services:
             - XDEBUG_REMOTE_PORT
 
     db:
+        image: magently/mde-mariadb
         build: ./docker/mariadb
         volumes:
             - ${MYSQL_USER_DIRECTORY:-/dev/null}:/var/lib/mysql-user
@@ -40,6 +44,7 @@ services:
             - MYSQL_DATABASE
 
     web:
+        image: magently/mde-nginx
         build: ./docker/nginx
         volumes:
             - ${MAGENTO_PATH}:/app:ro
