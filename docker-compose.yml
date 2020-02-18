@@ -13,10 +13,10 @@ services:
             - /etc/passwd:/etc/passwd:ro
             - /etc/group:/etc/group:ro
             - ${SSH_DIRECTORY:-~/.ssh}:/app-home/.ssh:ro
-            - ${NPM_DIRECTORY:-~/.npm}:/app-home/.npm
+            - ${NPM_DIRECTORY:-~/.npm}:/app-home/.npm:delegated
             - ${COMPOSER_AUTH_FILE:-/dev/null}:/app-home/.composer/auth.json:ro
-            - ${COMPOSER_CACHE_DIRECTORY:-~/.composer/cache}:/app-home/.composer/cache
-            - ${MAGENTO_PATH}:/app
+            - ${COMPOSER_CACHE_DIRECTORY:-~/.composer/cache}:/app-home/.composer/cache:delegated
+            - ${MAGENTO_PATH}:/app:delegated
         environment:
             - COMPOSER_INSTALL_ON_BOOT
             - COMPOSER_AUTH
