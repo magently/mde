@@ -4,7 +4,7 @@ services:
 
     app:
         user: ${UID:-1000}:${GID:-1000}
-        image: magently/mde-php-${PHP_VERSION}
+        image: magently/mde-php-${PHP_VERSION}:0.0.9
         build:
             context: ./docker/php
             args:
@@ -35,7 +35,7 @@ services:
             - SENDMAIL_SMTP_FROM
 
     db:
-        image: magently/mde-mariadb
+        image: magently/mde-mariadb:0.0.9
         build: ./docker/mariadb
         volumes:
             - ${MYSQL_USER_DIRECTORY:-/dev/null}:/var/lib/mysql-user
@@ -51,7 +51,7 @@ services:
             - MYSQL_DATABASE
 
     web:
-        image: magently/mde-nginx
+        image: magently/mde-nginx:0.0.9
         build: ./docker/nginx
         volumes:
             - ${MAGENTO_PATH}:/app:ro
