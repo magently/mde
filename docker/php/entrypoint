@@ -7,17 +7,20 @@ mkdir -p $(dirname $fpm_conf_file)
 # Configure XDebug for PHP-FPM
 # If host.docker.internal is resolvable, use it as remote host
 # Otherwise, use user defined remote host or connect back mechanism
-echo "zend_extension=xdebug.so
-xdebug.remote_enable=1
-xdebug.remote_autostart=1
-xdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}
-xdebug.remote_mode=req" > $fpm_conf_file
-if [ "$XDEBUG_REMOTE_HOST" != "" ]; then
-    echo "xdebug.remote_host=${XDEBUG_REMOTE_HOST}" >> $fpm_conf_file
-elif nslookup host.docker.internal > /dev/null; then
-    echo "xdebug.remote_host=host.docker.internal" >> $fpm_conf_file
-else
-    echo "xdebug.remote_connect_back=1" >> $fpm_conf_file
+XDEBUG_ENABLED=${XDEBUG_ENABLED:-true}
+if [ "$XDEBUG_ENABLED" = "true" ]; then
+    echo "zend_extension=xdebug.so
+    xdebug.remote_enable=1
+    xdebug.remote_autostart=1
+    xdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}
+    xdebug.remote_mode=req" > $fpm_conf_file
+    if [ "$XDEBUG_REMOTE_HOST" != "" ]; then
+        echo "xdebug.remote_host=${XDEBUG_REMOTE_HOST}" >> $fpm_conf_file
+    elif nslookup host.docker.internal > /dev/null; then
+        echo "xdebug.remote_host=host.docker.internal" >> $fpm_conf_file
+    else
+        echo "xdebug.remote_connect_back=1" >> $fpm_conf_file
+    fi
 fi
 
 # Configure easy access for MySQL

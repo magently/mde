@@ -24,6 +24,7 @@ services:
             - MYSQL_PASSWORD
             - MYSQL_DATABASE
             - PHP_IDE_CONFIG=serverName=docker_dev_${COMPOSE_PROJECT_NAME}
+            - XDEBUG_ENABLED
             - XDEBUG_REMOTE_HOST
             - XDEBUG_REMOTE_PORT
             - SENDMAIL_SMTP_HOST
