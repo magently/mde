@@ -79,7 +79,7 @@ RUN echo 'memory_limit=-1' > /usr/local/etc/php/php-cli.ini
 ADD www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Install NodeJS
-ENV NODE_RELEASE v12.14.1
+ENV NODE_RELEASE v12.16.1
 RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE}-linux-x64.tar.gz -O nodejs.tar.gz && \
     tar -xf nodejs.tar.gz && \
     rm nodejs.tar.gz && \
