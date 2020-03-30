@@ -73,9 +73,10 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
     chmod +x composer.phar && \
     mv composer.phar /usr/local/bin/composer
 
-# Configure PHP and disable memory limit for PHP-FPM
+# Configure PHP
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 RUN echo 'memory_limit=-1' > /usr/local/etc/php/php-cli.ini
+ADD www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Install NodeJS
 ENV NODE_RELEASE v12.14.1
