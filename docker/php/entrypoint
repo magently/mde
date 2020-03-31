@@ -1,53 +1,22 @@
 #!/bin/sh
-fpm_conf_file=/app-home/.php/fpm/php.ini
 
-# Create directory for fpm_conf_file if not present
-mkdir -p $(dirname $fpm_conf_file)
+# Create directory structure for PHP-FPM configuration if not present
+mkdir -p $HOME/.php/fpm
 
-# Configure XDebug for PHP-FPM
-# If host.docker.internal is resolvable, use it as remote host
-# Otherwise, use user defined remote host or connect back mechanism
-XDEBUG_ENABLED=${XDEBUG_ENABLED:-true}
-if [ "$XDEBUG_ENABLED" = "true" ]; then
-    echo "zend_extension=xdebug.so
-    xdebug.remote_enable=1
-    xdebug.remote_autostart=1
-    xdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}
-    xdebug.remote_mode=req" > $fpm_conf_file
-    if [ "$XDEBUG_REMOTE_HOST" != "" ]; then
-        echo "xdebug.remote_host=${XDEBUG_REMOTE_HOST}" >> $fpm_conf_file
-    elif nslookup host.docker.internal > /dev/null; then
-        echo "xdebug.remote_host=host.docker.internal" >> $fpm_conf_file
-    else
-        echo "xdebug.remote_connect_back=1" >> $fpm_conf_file
-    fi
-fi
+# Configure PHP
+nslookup host.docker.internal > /dev/null
+HOST_DOCKER_INTERNAL_ACCESSIBLE=$? dockerize -template \
+    /entrypoint-templates/php/fpm/php.ini.tpl > $HOME/.php/fpm/php.ini
 
-# Configure easy access for MySQL
-if [ ! -e "${HOME}/.my.cnf" ]; then
-    echo "[client]
-host = db
-user = ${MYSQL_USER}
-password = ${MYSQL_PASSWORD}
-database = ${MYSQL_DATABASE}" > ${HOME}/.my.cnf
-fi
+# Configure easy access to MariaDB/MySQL database
+dockerize -template \
+    /entrypoint-templates/my.cnf.tpl > $HOME/.my.cnf
 
 # Configure MSMTP
 if [ -n "$SENDMAIL_SMTP_HOST" ]; then
-    msmtprc_file=/app-home/.msmtprc
-    echo "defaults
-port ${SENDMAIL_SMTP_PORT:-25}
-tls ${SENDMAIL_SMTP_TLS:-off}
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
-
-account mail
-host $SENDMAIL_SMTP_HOST
-from ${SENDMAIL_SMTP_FROM:-magento@internal.app}
-auth ${SENDMAIL_SMTP_AUTH:-off}
-user ${SENDMAIL_SMTP_USER:-user}
-password ${SENDMAIL_SMTP_PASSWORD:-password}
-
-account default : mail" > $msmtprc_file
+    msmtprc_file=$HOME/.msmtprc
+    dockerize -template \
+        /entrypoint-templates/msmtprc.tpl > $msmtprc_file
     chmod 0600 $msmtprc_file
 fi
 

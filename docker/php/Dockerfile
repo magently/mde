@@ -7,7 +7,7 @@ ARG php_version
 ENV HOME /app-home
 RUN mkdir -p $HOME && chmod 777 $HOME
 
-# Install all required components
+# Install all required system dependencies
 RUN apt update && apt -y install \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
@@ -56,8 +56,7 @@ RUN if [ `echo "($php_version >= 7.2)" | bc` -eq 1 ]; then \
         echo "extension=mcrypt.so" > /usr/local/etc/php/conf.d/mcrypt.ini; \
     fi
 
-# Install and configure XDebug
-# Configuration is dynamically generated in entrypoint
+# Install XDebug
 RUN if [ `echo "($php_version == 5.6)" | bc` -eq 1 ]; then \
         pecl install xdebug-2.5.5; \
     elif [ `echo "($php_version == 7.0)" | bc` -eq 1 ]; then \
@@ -91,6 +90,15 @@ RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE
 RUN apt update && apt -y install msmtp msmtp-mta ca-certificates
 RUN echo "[mail function]" >> /usr/local/etc/php/conf.d/mail.ini
 RUN echo "sendmail_path = /usr/bin/msmtp -C /app-home/.msmtprc -t" >> /usr/local/etc/php/conf.d/mail.ini
+
+# Install Dockerize utility
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+# Copy entrypoint templates
+ADD entrypoint-templates /entrypoint-templates
 
 # General image configuration
 WORKDIR /app
