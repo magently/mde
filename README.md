@@ -93,6 +93,8 @@ The best way to figure out how the environment with all its features work, is to
 #### MariaDB
 * `MYSQL_ROOT_PASSWORD`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`: Settings for the database server. Once `db` container is initialized, those values should *not* be changed, unless you plan to reinitialize MariaDB by deleting its files.
 
+* `MYSQL_HOST` *(optional*): You can use different database server providing a hostname. Note that the host must be accessible from the `app` container.
+
 * `MYSQL_USER_DIRECTORY` *(optional)*: If set, `db` container will use provided path as variable storage for MariaDB server. This should be a UNIX-formatted path, and the directory has to exist and be writable by the current user. The database server daemon process will run on specified `UID` and `GID` permissions, so generated files will have the correct ownership and group.
 
 #### Composer
