@@ -76,6 +76,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 RUN echo 'memory_limit=-1' > /usr/local/etc/php/php-cli.ini
 ADD www.conf /usr/local/etc/php-fpm.d/www.conf
+RUN chmod 0644 /usr/local/etc/php-fpm.d/www.conf
 
 # Install NodeJS
 ENV NODE_RELEASE v12.16.1
@@ -99,6 +100,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 # Copy entrypoint templates
 ADD entrypoint-templates /entrypoint-templates
+RUN find /entrypoint-templates -type d -exec chmod 0755 {} \;
+RUN find /entrypoint-templates -type f -exec chmod 0644 {} \;
 
 # General image configuration
 WORKDIR /app
