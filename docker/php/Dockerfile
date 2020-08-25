@@ -79,7 +79,7 @@ ADD www.conf /usr/local/etc/php-fpm.d/www.conf
 RUN chmod 0644 /usr/local/etc/php-fpm.d/www.conf
 
 # Install NodeJS
-ENV NODE_RELEASE v12.16.1
+ENV NODE_RELEASE v12.18.3
 RUN wget https://nodejs.org/download/release/${NODE_RELEASE}/node-${NODE_RELEASE}-linux-x64.tar.gz -O nodejs.tar.gz && \
     tar -xf nodejs.tar.gz && \
     rm nodejs.tar.gz && \
