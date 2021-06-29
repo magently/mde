@@ -1,7 +1,10 @@
 ARG php_version
+ARG composer_version
+
 FROM "php:${php_version}-fpm"
 
 ARG php_version
+ARG composer_version
 
 # Configure application home directory
 ENV HOME /app-home
@@ -43,7 +46,8 @@ RUN docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     simplexml \
     xsl \
-    zip
+    zip \
+    sockets
 
 # PHP mcrypt extension installation is only possible with `pecl` since 7.2
 RUN if [ `echo "($php_version < 7.2)" | bc` -eq 1 ]; then \
@@ -66,9 +70,13 @@ RUN if [ `echo "($php_version == 5.6)" | bc` -eq 1 ]; then \
     fi
 
 # Install Composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    php composer-setup.php && \
-    php -r "unlink('composer-setup.php');" && \
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN if [ `echo "$composer_version" | grep -P "^\d+$" | wc -l` -eq 1 ]; then \
+        php composer-setup.php --$composer_version; \
+    else \
+        php composer-setup.php --version=$composer_version; \
+    fi
+RUN php -r "unlink('composer-setup.php');" && \
     chmod +x composer.phar && \
     mv composer.phar /usr/local/bin/composer
 

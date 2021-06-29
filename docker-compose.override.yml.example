@@ -1,0 +1,37 @@
+version: '3'
+
+# services:
+    # es:
+    #     # For Magento <2.4 use Elasticsearch version 6.8.6.
+    #     # For Magento 2.4+ use version 7.13.2 instead.
+    #     image: elasticsearch:6.8.6
+    #     env_file:
+    #         - .env
+    #     environment:
+    #         # - node.name=${ELASTICSEARCH_NODE_NAME:-elasticsearch_n1}
+    #         # - cluster.name=${ELASTICSEARCH_CLUSTER_NAME:-elasticsearch}
+    #         - discovery.type=single-node
+    #         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    #     # If you have performance problems because of Elasticsearch
+    #     # or the container exits after some time (usually around a minute),
+    #     # then uncomment following settings.
+    #     #
+    #     # ulimits:
+    #     #     memlock:
+    #     #         soft: -1
+    #     #         hard: -1
+    #     volumes:
+    #         - ${ELASTICSEARCH_DATA_DIR:-/usr/share/elasticsearch/data}
+
+    # phpmyadmin:
+    #     image: phpmyadmin/phpmyadmin
+    #     ports:
+    #         - ${LOCALHOST_IP}:8336:80
+
+    # varnish:
+    #     image: emgag/varnish:5.2.1
+    #     volumes:
+    #         - ./configs/magento-varnish.vcl:/etc/varnish/default.vcl:ro
+
+    # redis:
+    #     image: redis
