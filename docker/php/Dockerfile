@@ -65,8 +65,10 @@ RUN if [ `echo "($php_version == 5.6)" | bc` -eq 1 ]; then \
         pecl install xdebug-2.5.5; \
     elif [ `echo "($php_version == 7.0)" | bc` -eq 1 ]; then \
         pecl install xdebug-2.8.1; \
-    elif [ `echo "($php_version >= 7.1)" | bc` -eq 1 ]; then \
+    elif [ `echo "($php_version >= 7.1 && $php_version <= 7.4)" | bc` -eq 1 ]; then \
         pecl install xdebug-2.9.2; \
+    elif [ `echo "($php_version >= 8.0)" | bc` -eq 1 ]; then \
+        pecl install xdebug-3.1.5; \
     fi
 
 # Install Composer

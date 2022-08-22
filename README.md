@@ -129,6 +129,8 @@ A container that hosts MySQL doesn't expose any ports by default.
     - 7.2,
     - 7.3,
     - 7.4,
+    - 8.0,
+    - 8.1,
 
 - `PHP_EXTENSIONS`: a list of additional PHP extensions to be installed,
 - `MAGENTO_PATH`: application directory. The path should be in UNIX format,
