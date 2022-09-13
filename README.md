@@ -350,3 +350,8 @@ There were situations, though, when not setting these limits didn't cause the
 container to exit and there weren't any performance issues. If you have any
 of them, include these limits in `docker-compose.override.yml` - refer to
 example `docker-compose` configuration file.
+
+
+### Infrastructure model
+
+![Infrastructure model](.infragenie/infrastructure_model.png)
